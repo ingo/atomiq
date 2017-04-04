@@ -11,8 +11,7 @@ import (
 	"github.com/appcelerator/amp/api/rpc/function"
 	"github.com/appcelerator/amp/api/rpc/logs"
 	"github.com/appcelerator/amp/api/rpc/stats"
-	"github.com/appcelerator/amp/cli"
-	"github.com/appcelerator/amp/cmd/amplifier/server"
+	//"github.com/appcelerator/amp/cli"
 	"github.com/appcelerator/amp/data/accounts"
 	"github.com/appcelerator/amp/data/functions"
 	"github.com/appcelerator/amp/data/storage"
@@ -27,40 +26,40 @@ import (
 var (
 	ctx            context.Context
 	store          storage.Interface
-	functionClient function.FunctionClient
-	statsClient    stats.StatsClient
-	logsClient     logs.LogsClient
+	//functionClient function.FunctionClient
+	//statsClient    stats.StatsClient
+	//logsClient     logs.LogsClient
 	accountClient  account.AccountClient
 	accountStore   accounts.Interface
-	functionStore  functions.Interface
+	//functionStore  functions.Interface
 )
 
 func TestMain(m *testing.M) {
 	ctx = context.Background()
 
 	// Stores
-	store = etcd.New([]string{server.EtcdDefaultEndpoint}, "amp")
+	store = etcd.New([]string{amp.EtcdDefaultEndpoint}, "amp")
 	if err := store.Connect(5 * time.Second); err != nil {
 		log.Panicf("Unable to connect to etcd on: %s\n%v", amp.EtcdDefaultEndpoint, err)
 	}
 	accountStore = accounts.NewStore(store)
-	functionStore = functions.NewStore(store)
+	//functionStore = functions.NewStore(store)
 
 	// Create a valid user token
-	token, _ := auth.CreateLoginToken("default", "", time.Hour)
+	//token, _ := auth.CreateLoginToken("default", "", time.Hour)
 
 	// Connect to amplifier
-	amplifierEndpoint := "amplifier" + server.DefaultPort
+	amplifierEndpoint := "amplifier" + amp.AmplifierDefaultPort
 	log.Println("Connecting to amplifier")
-	authenticatedConn, err := grpc.Dial(amplifierEndpoint,
-		grpc.WithInsecure(),
-		grpc.WithBlock(),
-		grpc.WithTimeout(60*time.Second),
-		grpc.WithPerRPCCredentials(&cli.LoginCredentials{Token: token}),
-	)
-	if err != nil {
-		log.Panicf("Unable to connect to amplifier on: %s\n%v", amplifierEndpoint, err)
-	}
+	//authenticatedConn, err := grpc.Dial(amplifierEndpoint,
+	//	grpc.WithInsecure(),
+	//	grpc.WithBlock(),
+	//	grpc.WithTimeout(60*time.Second),
+	//	grpc.WithPerRPCCredentials(&cli.LoginCredentials{Token: token}),
+	//)
+	//if err != nil {
+	//	log.Panicf("Unable to connect to amplifier on: %s\n%v", amplifierEndpoint, err)
+	//}
 	anonymousConn, err := grpc.Dial(amplifierEndpoint,
 		grpc.WithInsecure(),
 		grpc.WithBlock(),
@@ -75,12 +74,12 @@ func TestMain(m *testing.M) {
 	initMailServer()
 
 	// Authenticated clients
-	statsClient = stats.NewStatsClient(authenticatedConn)
-	logsClient = logs.NewLogsClient(authenticatedConn)
+	//statsClient = stats.NewStatsClient(authenticatedConn)
+	//logsClient = logs.NewLogsClient(authenticatedConn)
 
 	// Anonymous clients
 	accountClient = account.NewAccountClient(anonymousConn)
-	functionClient = function.NewFunctionClient(anonymousConn)
+	//functionClient = function.NewFunctionClient(anonymousConn)
 
 	// Start tests
 	code := m.Run()
