@@ -8,12 +8,8 @@ import (
 
 	"github.com/appcelerator/amp/api/auth"
 	"github.com/appcelerator/amp/api/rpc/account"
-	"github.com/appcelerator/amp/api/rpc/function"
-	"github.com/appcelerator/amp/api/rpc/logs"
-	"github.com/appcelerator/amp/api/rpc/stats"
 	//"github.com/appcelerator/amp/cli"
 	"github.com/appcelerator/amp/data/accounts"
-	"github.com/appcelerator/amp/data/functions"
 	"github.com/appcelerator/amp/data/storage"
 	"github.com/appcelerator/amp/data/storage/etcd"
 	"github.com/appcelerator/amp/pkg/config"
@@ -38,9 +34,10 @@ func TestMain(m *testing.M) {
 	ctx = context.Background()
 
 	// Stores
-	store = etcd.New([]string{amp.EtcdDefaultEndpoint}, "amp")
+	etcdEndPoint := "http://amplifier_etcd:2379"
+	store = etcd.New([]string{etcdEndPoint}, "amp")
 	if err := store.Connect(5 * time.Second); err != nil {
-		log.Panicf("Unable to connect to etcd on: %s\n%v", amp.EtcdDefaultEndpoint, err)
+		log.Panicf("Unable to connect to etcd on: %s\n%v", etcdEndPoint, err)
 	}
 	accountStore = accounts.NewStore(store)
 	//functionStore = functions.NewStore(store)
@@ -49,7 +46,7 @@ func TestMain(m *testing.M) {
 	//token, _ := auth.CreateLoginToken("default", "", time.Hour)
 
 	// Connect to amplifier
-	amplifierEndpoint := "amplifier" + amp.AmplifierDefaultPort
+	amplifierEndpoint := "amplifier_amplifier" + amp.AmplifierDefaultPort
 	log.Println("Connecting to amplifier")
 	//authenticatedConn, err := grpc.Dial(amplifierEndpoint,
 	//	grpc.WithInsecure(),
@@ -71,7 +68,7 @@ func TestMain(m *testing.M) {
 	log.Println("Connected to amplifier")
 
 	// Init mail
-	initMailServer()
+	//initMailServer()
 
 	// Authenticated clients
 	//statsClient = stats.NewStatsClient(authenticatedConn)

@@ -1,0 +1,6 @@
+FROM golang:alpine
+RUN apk --no-cache add make bash
+WORKDIR /go/src/github.com/appcelerator/amp
+COPY . /go/src/github.com/appcelerator/amp
+CMD [ "make", "test-integration-host"]
+

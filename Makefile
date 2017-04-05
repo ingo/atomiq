@@ -282,7 +282,7 @@ test-integration-host:
 
 test-integration:
 	@docker service rm amp-integration-test > /dev/null 2>&1 || true
-	@docker build --build-arg BUILD=$(BUILD) -t appcelerator/amp-integration-test -f Dockerfile.test .
-	@docker tag appcelerator/amp-integration-test localhost:5000/appcelerator/amp-integration-test
-	@docker push localhost:5000/appcelerator/amp-integration-test
-	@hack/deploy
+	@docker build -t appcelerator/amp-integration-test -f Dockerfile.integration .
+#	@docker tag appcelerator/amp-integration-test localhost:5000/appcelerator/amp-integration-test
+#	@docker push localhost:5000/appcelerator/amp-integration-test
+	@docker service create --network amplifier_infrastructure --name amp-integration-test --restart-condition none appcelerator/amp-integration-test make test-integration-host

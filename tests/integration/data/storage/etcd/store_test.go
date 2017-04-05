@@ -12,7 +12,6 @@ import (
 	"strings"
 
 	"github.com/appcelerator/amp/api/state"
-	"github.com/appcelerator/amp/pkg/config"
 	"github.com/appcelerator/amp/data/storage"
 	"github.com/appcelerator/amp/data/storage/etcd"
 	"github.com/docker/docker/pkg/testutil/assert"
@@ -37,7 +36,7 @@ func TestMain(m *testing.M) {
 	log.SetFlags(log.Lshortfile)
 	log.SetPrefix("test: ")
 
-	etcdEndpoints := []string{amp.EtcdDefaultEndpoint}
+	etcdEndpoints := []string{"http://amplifier_etcd:2379"}
 	log.Printf("connecting to etcd at %s", strings.Join(etcdEndpoints, ","))
 	store = etcd.New(etcdEndpoints, "amp")
 	if err := store.Connect(defTimeout); err != nil {
