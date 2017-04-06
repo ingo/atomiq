@@ -35,8 +35,8 @@ func TestMain(m *testing.M) {
 
 	// Stores
 	etcdEndPoint := "http://amplifier_etcd:2379"
-	store = etcd.New([]string{etcdEndPoint}, "amp")
-	if err := store.Connect(5 * time.Second); err != nil {
+	store = etcd.New([]string{etcdEndPoint}, "amp", 5 * time.Second)
+	if err := store.Connect(); err != nil {
 		log.Panicf("Unable to connect to etcd on: %s\n%v", etcdEndPoint, err)
 	}
 	accountStore = accounts.NewStore(store)

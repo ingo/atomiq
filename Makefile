@@ -285,4 +285,4 @@ test-integration:
 	@docker build -t appcelerator/amp-integration-test -f Dockerfile.integration .
 #	@docker tag appcelerator/amp-integration-test localhost:5000/appcelerator/amp-integration-test
 #	@docker push localhost:5000/appcelerator/amp-integration-test
-	@docker service create --network amplifier_infrastructure --name amp-integration-test --restart-condition none appcelerator/amp-integration-test make test-integration-host
+	@docker service create --network ampnet --restart-condition none --name amp-integration-test appcelerator/amp-integration-test make test-integration-host

@@ -38,8 +38,8 @@ func TestMain(m *testing.M) {
 
 	etcdEndpoints := []string{"http://amplifier_etcd:2379"}
 	log.Printf("connecting to etcd at %s", strings.Join(etcdEndpoints, ","))
-	store = etcd.New(etcdEndpoints, "amp")
-	if err := store.Connect(defTimeout); err != nil {
+	store = etcd.New(etcdEndpoints, "amp", defTimeout)
+	if err := store.Connect(); err != nil {
 		log.Panicf("Unable to connect to etcd on: %s\n%v", etcdEndpoints, err)
 	}
 	log.Printf("connected to etcd at %v", strings.Join(store.Endpoints(), ","))
