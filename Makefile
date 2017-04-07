@@ -9,11 +9,8 @@ BASEDIR := $(shell echo $${PWD})
 export UG := $(shell echo "$$(id -u):$$(id -g)")
 
 export VERSION := $(shell cat VERSION)
-export BUILD := $(shell git rev-parse HEAD | cut -c1-8)
+export BUILD ?= $(shell git rev-parse HEAD | cut -c1-8)
 export LDFLAGS := "-X=main.Version=$(VERSION) -X=main.Build=$(BUILD)"
-
-# tests
-INTEGRATION_TEST_PACKAGES := $(shell find ./tests/integration -type f -name '*_test.go' $(EXCLUDE_DIRS_FILTER) -exec dirname {} \; | sort -u)
 
 export OWNER := appcelerator
 export REPO := github.com/$(OWNER)/amp
@@ -274,15 +271,10 @@ deploy: build
 # =============================================================================
 # Integration Tests
 # =============================================================================
+# tests
+INTEGRATION_TEST_PACKAGES := $(shell find ./tests/integration -type f -name '*_test.go' $(EXCLUDE_DIRS_FILTER) -exec dirname {} \; | sort -u)
 
 test-integration-host:
 	@for pkg in $(INTEGRATION_TEST_PACKAGES) ; do \
 		go test $$pkg || exit 1 ; \
 	done
-
-test-integration:
-	@docker service rm amp-integration-test > /dev/null 2>&1 || true
-	@docker build -t appcelerator/amp-integration-test -f Dockerfile.integration .
-#	@docker tag appcelerator/amp-integration-test localhost:5000/appcelerator/amp-integration-test
-#	@docker push localhost:5000/appcelerator/amp-integration-test
-	@docker service create --network ampnet --restart-condition none --name amp-integration-test appcelerator/amp-integration-test make test-integration-host

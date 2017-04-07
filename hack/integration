@@ -1,0 +1,38 @@
+#!/bin/bash
+
+readonly SP="$(cd "$(dirname $0)"; pwd -P)"
+
+checkexit() {
+  [[ $1 -ne 0 ]] && printf "${@:2} (exit $1)\n" && exit $1
+}
+
+ok() {
+  echo ok $1
+}
+
+pushimage() {
+  echo "push image: $1/$2"
+  docker tag $2 $1/$2
+  checkexit $? "error tagging image"
+  docker push $1/$2
+  checkexit $? "error pushing image"
+  ok
+}
+
+# helper for any subsequent docker commands
+amps="docker run -it --rm --network=hostnet -v $(dirname $SP)/stacks:/stacks docker --host=m1"
+
+# Removing any previous service instance
+$amps service rm amp-integration-test > /dev/null 2>&1 || true
+
+# Build integration test image
+docker build --build-arg BUILD=$BUILD -t appcelerator/amp-integration-test -f Dockerfile.integration .
+
+# Push image to the swarm registry
+pushimage localhost:5000 appcelerator/amp-integration-test
+
+# Start integration tests
+$amps service create --network ampnet --restart-condition none --name amp-integration-test appcelerator/amp-integration-test make test-integration-host
+
+# Wait for service to be done (using service logs -f)
+$amps service logs -f amp-integration
